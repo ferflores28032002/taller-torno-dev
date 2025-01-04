@@ -16,16 +16,28 @@ import {
 import axios from "axios";
 import axiosInstance from "src/api/axiosInstance";
 
-const defaultWorkers = [
-  { id: 1, name: "Juan Perez" },
-  { id: 2, name: "Pedro Rodriguez" },
-  { id: 3, name: "Maria Lopez" },
-];
-
-export const InfoModal = ({ id, open, onClose, workers = defaultWorkers }) => {
+export const InfoModal = ({ id, open, onClose }) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [workers, setWorkers] = useState([]);
   const [assignments, setAssignments] = useState({});
+
+  useEffect(() => {
+    const fetchWorkers = async () => {
+      try {
+        const response = await axios.get("https://www.tallercenteno.somee.com/api/Empleados");
+        const workersData = response.data.map((worker) => ({
+          id: worker.id,
+          name: `${worker.nombre} ${worker.apellidos}`,
+        }));
+        setWorkers(workersData);
+      } catch (error) {
+        console.error("Error fetching workers:", error);
+      }
+    };
+
+    fetchWorkers();
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -47,6 +59,30 @@ export const InfoModal = ({ id, open, onClose, workers = defaultWorkers }) => {
 
   const handleAssignmentChange = (sectionId, value) => {
     setAssignments({ ...assignments, [sectionId]: value });
+  };
+
+  const handleSaveAssignments = async () => {
+    try {
+      const payload = Object.entries(assignments).map(([sectionId, worker]) => ({
+        seccionId: parseInt(sectionId, 10),
+        empleadoId: worker?.id || null,
+      }));
+
+      if (payload.some((item) => !item.empleadoId)) {
+        alert("Por favor, asigna un trabajador a todas las secciones.");
+        return;
+      }
+
+      await axiosInstance.post(
+        `Proformas/asignar-trabajador-a-secciones?proformaId=${id}`,
+        payload
+      );
+      alert("Asignaciones guardadas exitosamente.");
+      onClose();
+    } catch (error) {
+      console.error("Error saving assignments:", error);
+      alert("Error al guardar las asignaciones. Por favor, intenta de nuevo.");
+    }
   };
 
   return (
@@ -144,7 +180,7 @@ export const InfoModal = ({ id, open, onClose, workers = defaultWorkers }) => {
                       Asignar Trabajo
                     </Typography>
                     <Autocomplete
-                      options={workers || []}
+                      options={workers}
                       getOptionLabel={(option) => option.name || ""}
                       renderInput={(params) => (
                         <TextField {...params} label="Seleccionar trabajador" />
@@ -160,7 +196,10 @@ export const InfoModal = ({ id, open, onClose, workers = defaultWorkers }) => {
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary" variant="contained">
+        <Button onClick={handleSaveAssignments} color="primary" variant="contained">
+          Guardar
+        </Button>
+        <Button onClick={onClose} color="secondary" variant="contained">
           Cerrar
         </Button>
       </DialogActions>

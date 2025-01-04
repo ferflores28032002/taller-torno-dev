@@ -23,7 +23,7 @@ import axiosInstance from "src/api/axiosInstance";
 
 const Tab2Content = () => {
   const [startDate, setStartDate] = useState("2024-12-23");
-  const [endDate, setEndDate] = useState("2025-01-04");
+  const [endDate, setEndDate] = useState(new Date().toISOString().split("T")[0]);
   const [reportData, setReportData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -102,7 +102,6 @@ const Tab2Content = () => {
 
       {/* Buscador */}
       <TextField
-        label="Buscar empleado"
         variant="outlined"
         fullWidth
         sx={{ mb: 3 }}
