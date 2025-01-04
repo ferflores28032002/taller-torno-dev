@@ -134,7 +134,7 @@ const Tab2Content = () => {
                     <TableCell sx={{ cursor: "pointer", color: "red" }}>
                       {empleado.seccionNombre}
                     </TableCell>
-                    <TableCell>${empleado.totalGanado.toLocaleString()}</TableCell>
+                    <TableCell>C${empleado.totalGanado.toLocaleString()}</TableCell>
                     <TableCell align="center">
                       <Button variant="contained" onClick={() => handleOpenModal(empleado)}>
                         Ver
@@ -173,7 +173,7 @@ const Tab2Content = () => {
                     {selectedEmployee.items.map((item, index) => (
                       <TableRow key={index}>
                         <TableCell>{item.descripcion}</TableCell>
-                        <TableCell>${item.precio.toLocaleString()}</TableCell>
+                        <TableCell>C${item.precio.toLocaleString()}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
