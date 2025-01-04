@@ -57,7 +57,7 @@ const OrderDetailsModal = ({ orderId, open, onClose }) => {
             <List>
               {orderData.servicios.map((servicio, index) => (
                 <ListItem key={index}>
-                  <ListItemText primary={servicio} />
+                  <ListItemText primary={servicio.nombre} />
                 </ListItem>
               ))}
             </List>

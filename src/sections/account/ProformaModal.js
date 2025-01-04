@@ -73,7 +73,7 @@ const ProformaModal = ({ open, handleClose, data, id }) => {
 
     try {
       const response = await axiosInstance.post(
-        "https://www.tallercentenos.somee.com/api/Proformas/api/Proformas/Create",
+        "Proformas/api/Proformas/Create",
         payload
       );
       console.log("Proforma creada con éxito:", response.data);
@@ -135,9 +135,9 @@ const ProformaModal = ({ open, handleClose, data, id }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.servicios.map((service) => (
-                <TableRow key={service}>
-                  <TableCell>{service}</TableCell>
+              {data.servicios.map((service, i) => (
+                <TableRow key={i}>
+                  <TableCell>{service.nombre}</TableCell>
                   <TableCell>
                     <Box display="flex" alignItems="center">
                       <Typography variant="body2" sx={{ mr: 1 }}>
@@ -147,8 +147,8 @@ const ProformaModal = ({ open, handleClose, data, id }) => {
                         variant="outlined"
                         size="small"
                         type="number"
-                        value={prices[service]}
-                        onChange={(e) => handlePriceChange(service, e.target.value)}
+                        value={prices[service.nombre]}
+                        onChange={(e) => handlePriceChange(service.nombre, e.target.value)}
                         inputProps={{ min: 0, step: 0.01 }}
                       />
                     </Box>

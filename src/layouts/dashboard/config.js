@@ -18,15 +18,15 @@ export const items = [
       </SvgIcon>
     )
   },
-  // {
-  //   title: 'Reparaciones',
-  //   path: '/customers',
-  //   icon: (
-  //     <SvgIcon fontSize="small">
-  //       <UsersIcon />
-  //     </SvgIcon>
-  //   )
-  // },
+  {
+    title: 'Reparaciones',
+    path: '/customers',
+    icon: (
+      <SvgIcon fontSize="small">
+        <UsersIcon />
+      </SvgIcon>
+    )
+  },
   {
     title: 'Trabajadores',
     path: '/companies',
@@ -45,24 +45,24 @@ export const items = [
       </SvgIcon>
     )
   },
-  // {
-  //   title: 'Ordenes de Trabajo',
-  //   path: '/account',
-  //   icon: (
-  //     <SvgIcon fontSize="small">
-  //       <CogIcon />
-  //     </SvgIcon>
-  //   )
-  // },
-  // {
-  //   title: 'Proformas',
-  //   path: '/settings',
-  //   icon: (
-  //     <SvgIcon fontSize="small">
-  //       <CogIcon />
-  //     </SvgIcon>
-  //   )
-  // },
+  {
+    title: 'Ordenes de Trabajo',
+    path: '/account',
+    icon: (
+      <SvgIcon fontSize="small">
+        <CogIcon />
+      </SvgIcon>
+    )
+  },
+  {
+    title: 'Proformas',
+    path: '/settings',
+    icon: (
+      <SvgIcon fontSize="small">
+        <CogIcon />
+      </SvgIcon>
+    )
+  },
   // {
   //   title: 'Login',
   //   path: '/auth/login',

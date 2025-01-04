@@ -114,7 +114,7 @@ export const Orden = ({ searchQuery }) => {
         head: [["Servicios"]],
         body:
           data.servicios.length > 0
-            ? data.servicios.map((servicio) => [servicio])
+            ? data.servicios.map((servicio) => [servicio.nombre])
             : [["No hay servicios registrados"]],
         styles: {
           fontSize: 9,
@@ -245,7 +245,7 @@ export const Orden = ({ searchQuery }) => {
             <ul>
               ${
                 data.servicios.length > 0
-                  ? data.servicios.map((servicio) => `<li>${servicio}</li>`).join("")
+                  ? data.servicios.map((servicio) => `<li>${servicio.nombre}</li>`).join("")
                   : '<li class="no-data">No hay servicios registrados</li>'
               }
             </ul>
