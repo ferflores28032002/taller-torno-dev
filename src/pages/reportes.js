@@ -103,7 +103,7 @@ const Reportes = () => {
                       <ul>
                         {reportData.map((item) => (
                           <li key={item.sectionName}>
-                            {item.sectionName}: ${item.total.toLocaleString()}
+                            {item.sectionName}: C${item.total.toLocaleString()}
                           </li>
                         ))}
                       </ul>
