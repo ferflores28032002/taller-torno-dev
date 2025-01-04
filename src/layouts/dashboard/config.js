@@ -1,93 +1,73 @@
-import ChartBarIcon from '@heroicons/react/24/solid/ChartBarIcon';
-import CogIcon from '@heroicons/react/24/solid/CogIcon';
-import LockClosedIcon from '@heroicons/react/24/solid/LockClosedIcon';
-import ShoppingBagIcon from '@heroicons/react/24/solid/ShoppingBagIcon';
-import UserIcon from '@heroicons/react/24/solid/UserIcon';
-import UserPlusIcon from '@heroicons/react/24/solid/UserPlusIcon';
-import UsersIcon from '@heroicons/react/24/solid/UsersIcon';
-import XCircleIcon from '@heroicons/react/24/solid/XCircleIcon';
-import { SvgIcon } from '@mui/material';
+import BarChartIcon from "@mui/icons-material/BarChart";
+import BuildIcon from "@mui/icons-material/Build";
+import PeopleIcon from "@mui/icons-material/People";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
+import DescriptionIcon from "@mui/icons-material/Description";
+import { SvgIcon } from "@mui/material";
 
 export const items = [
   {
-    title: 'Overview',
-    path: '/',
+    title: "Overview",
+    path: "/",
     icon: (
       <SvgIcon fontSize="small">
-        <ChartBarIcon />
+        <BarChartIcon />
       </SvgIcon>
-    )
+    ),
   },
   {
-    title: 'Reparaciones',
-    path: '/customers',
+    title: "Reportes",
+    path: "/reportes",
     icon: (
       <SvgIcon fontSize="small">
-        <UsersIcon />
+        <BarChartIcon />
       </SvgIcon>
-    )
+    ),
   },
   {
-    title: 'Trabajadores',
-    path: '/companies',
+    title: "Reparaciones",
+    path: "/customers",
     icon: (
       <SvgIcon fontSize="small">
-        <UsersIcon />
+        <BuildIcon />
       </SvgIcon>
-    )
+    ),
   },
   {
-    title: 'Asignaciones',
-    path: '/asignaciones',
+    title: "Trabajadores",
+    path: "/companies",
     icon: (
       <SvgIcon fontSize="small">
-        <CogIcon />
+        <PeopleIcon />
       </SvgIcon>
-    )
+    ),
   },
   {
-    title: 'Ordenes de Trabajo',
-    path: '/account',
+    title: "Asignaciones",
+    path: "/asignaciones",
     icon: (
       <SvgIcon fontSize="small">
-        <CogIcon />
+        <AssignmentIcon />
       </SvgIcon>
-    )
+    ),
   },
   {
-    title: 'Proformas',
-    path: '/settings',
+    title: "Ordenes de Trabajo",
+    path: "/account",
     icon: (
       <SvgIcon fontSize="small">
-        <CogIcon />
+        <WorkOutlineIcon />
       </SvgIcon>
-    )
+    ),
   },
-  // {
-  //   title: 'Login',
-  //   path: '/auth/login',
-  //   icon: (
-  //     <SvgIcon fontSize="small">
-  //       <LockClosedIcon />
-  //     </SvgIcon>
-  //   )
-  // },
-  // {
-  //   title: 'Register',
-  //   path: '/auth/register',
-  //   icon: (
-  //     <SvgIcon fontSize="small">
-  //       <UserPlusIcon />
-  //     </SvgIcon>
-  //   )
-  // },
-  // {
-  //   title: 'Error',
-  //   path: '/404',
-  //   icon: (
-  //     <SvgIcon fontSize="small">
-  //       <XCircleIcon />
-  //     </SvgIcon>
-  //   )
-  // }
+  {
+    title: "Proformas",
+    path: "/settings",
+    icon: (
+      <SvgIcon fontSize="small">
+        <DescriptionIcon />
+      </SvgIcon>
+    ),
+  },
 ];
