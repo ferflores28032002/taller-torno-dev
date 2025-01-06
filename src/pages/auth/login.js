@@ -18,15 +18,20 @@ import {
 } from "@mui/material";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as AuthLayout } from "src/layouts/auth/layout";
+import axiosInstance from "src/api/axiosInstance";
+import useAuthStore from "src/store/useAuthStore";
 
 const Page = () => {
   const router = useRouter();
   const auth = useAuth();
   const [method, setMethod] = useState("email");
+  const [apiResponse, setApiResponse] = useState(null); // For success or error messages
+  const { setUser } = useAuthStore();
+
   const formik = useFormik({
     initialValues: {
-      email: "demo@devias.io",
-      password: "Password123!",
+      email: "",
+      password: "",
       submit: null,
     },
     validationSchema: Yup.object({
@@ -35,12 +40,32 @@ const Page = () => {
     }),
     onSubmit: async (values, helpers) => {
       try {
-        await auth.signIn(values.email, values.password);
-        router.push("/");
+        // Call the login API
+        const response = await axiosInstance.post("Auth/login", {
+          correo: values.email,
+          password: values.password,
+        });
+
+        const data = await response.data;
+
+        if (data && data.role) {
+          setUser({
+            user: data.name, // Asegúrate de usar el campo correcto para el nombre
+            role: data.role, // Asegúrate de usar el campo correcto para el rol
+          });
+          setApiResponse({
+            type: "success",
+            message: `Bienvenido! Tu rol es: ${data.role}`,
+          });
+          router.push("/");
+        } else {
+          console.log("error");
+        }
       } catch (err) {
         helpers.setStatus({ success: false });
-        helpers.setErrors({ submit: err.message });
+        helpers.setErrors({ submit: "Credenciales Incorrectas" });
         helpers.setSubmitting(false);
+        setApiResponse({ type: "error", message: err.message });
       }
     },
   });
@@ -48,11 +73,6 @@ const Page = () => {
   const handleMethodChange = useCallback((event, value) => {
     setMethod(value);
   }, []);
-
-  const handleSkip = useCallback(() => {
-    auth.skip();
-    router.push("/");
-  }, [auth, router]);
 
   return (
     <>
@@ -90,7 +110,7 @@ const Page = () => {
                     error={!!(formik.touched.email && formik.errors.email)}
                     fullWidth
                     helperText={formik.touched.email && formik.errors.email}
-                    label="Email Address"
+                    placeholder="Email Address"
                     name="email"
                     onBlur={formik.handleBlur}
                     onChange={formik.handleChange}
@@ -101,7 +121,7 @@ const Page = () => {
                     error={!!(formik.touched.password && formik.errors.password)}
                     fullWidth
                     helperText={formik.touched.password && formik.errors.password}
-                    label="Password"
+                    placeholder="Password"
                     name="password"
                     onBlur={formik.handleBlur}
                     onChange={formik.handleChange}
@@ -124,6 +144,12 @@ const Page = () => {
                     Puedes usar el correo <b>demo@devias.io</b> y el password <b>Password123!</b>
                   </div>
                 </Alert>
+
+                {apiResponse && (
+                  <Alert severity={apiResponse.type} sx={{ mt: 3 }}>
+                    {apiResponse.message}
+                  </Alert>
+                )}
               </form>
             )}
             {method === "phoneNumber" && (

@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  TablePagination,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -25,10 +26,17 @@ const Tab2Content = () => {
   const [startDate, setStartDate] = useState("2024-12-23");
   const [endDate, setEndDate] = useState(new Date().toISOString().split("T")[0]);
   const [reportData, setReportData] = useState([]);
+  const [totalesPorEmpleado, setTotalesPorEmpleado] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+  const [filteredTotals, setFilteredTotals] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchTotalTerm, setSearchTotalTerm] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [openModal, setOpenModal] = useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [totalsPage, setTotalsPage] = useState(0);
+  const [totalsRowsPerPage, setTotalsRowsPerPage] = useState(10);
 
   const theme = useTheme();
   const isFullScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -50,6 +58,19 @@ const Tab2Content = () => {
     }
   }, [searchTerm, reportData]);
 
+  useEffect(() => {
+    if (searchTotalTerm.trim() === "") {
+      setFilteredTotals(totalesPorEmpleado);
+    } else {
+      const lowercasedSearch = searchTotalTerm.toLowerCase();
+      setFilteredTotals(
+        totalesPorEmpleado.filter((total) =>
+          total.empleadoNombre.toLowerCase().includes(lowercasedSearch)
+        )
+      );
+    }
+  }, [searchTotalTerm, totalesPorEmpleado]);
+
   const fetchReportData = async () => {
     if (!startDate || !endDate) {
       console.error("Las fechas de inicio y fin son obligatorias");
@@ -60,8 +81,14 @@ const Tab2Content = () => {
       const response = await axiosInstance.get(
         `Proformas/Reporte?startDate=${startDate}&endDate=${endDate}`
       );
-      setReportData(response.data);
-      setFilteredData(response.data);
+
+      const reporteDetallado = response.data.reporteDetallado || [];
+      const totales = response.data.totalesPorEmpleado || [];
+
+      setReportData(reporteDetallado);
+      setTotalesPorEmpleado(totales);
+      setFilteredData(reporteDetallado);
+      setFilteredTotals(totales);
     } catch (error) {
       console.error("Error fetching Tab 2 data:", error);
     }
@@ -75,6 +102,24 @@ const Tab2Content = () => {
   const handleCloseModal = () => {
     setOpenModal(false);
     setSelectedEmployee(null);
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleTotalsChangePage = (event, newPage) => {
+    setTotalsPage(newPage);
+  };
+
+  const handleTotalsChangeRowsPerPage = (event) => {
+    setTotalsRowsPerPage(parseInt(event.target.value, 10));
+    setTotalsPage(0);
   };
 
   return (
@@ -100,7 +145,7 @@ const Tab2Content = () => {
         </Button>
       </Stack>
 
-      {/* Buscador */}
+      {/* Buscador principal */}
       <TextField
         variant="outlined"
         fullWidth
@@ -116,35 +161,98 @@ const Tab2Content = () => {
         </Typography>
       ) : (
         <>
-          {/* Tabla */}
+          {/* Tabla principal */}
           <TableContainer component={Paper} sx={{ mb: 4 }}>
             <Table>
               <TableHead>
                 <TableRow>
                   <TableCell>Empleado</TableCell>
                   <TableCell>Sección</TableCell>
+                  <TableCell>Cliente</TableCell>
+                  <TableCell>Proforma</TableCell>
                   <TableCell>Total Ganado</TableCell>
                   <TableCell align="center">Acciones</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredData.map((empleado) => (
-                  <TableRow key={empleado.empleadoNombre}>
-                    <TableCell>{empleado.empleadoNombre}</TableCell>
-                    <TableCell sx={{ cursor: "pointer", color: "red" }}>
-                      {empleado.seccionNombre}
-                    </TableCell>
-                    <TableCell>C${empleado.totalGanado.toLocaleString()}</TableCell>
-                    <TableCell align="center">
-                      <Button variant="contained" onClick={() => handleOpenModal(empleado)}>
-                        Ver
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {filteredData
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((empleado) => (
+                    <TableRow key={empleado.numeroProforma}>
+                      <TableCell>{empleado.empleadoNombre}</TableCell>
+                      <TableCell>{empleado.seccionNombre}</TableCell>
+                      <TableCell>{empleado.clienteNombre}</TableCell>
+                      <TableCell>{empleado.numeroProforma}</TableCell>
+                      <TableCell style={{ color: empleado.totalGanado > 0 ? "blue" : "red" }}>
+                        C${empleado.totalGanado.toLocaleString()}
+                      </TableCell>
+                      <TableCell align="center">
+                        <Button variant="contained" onClick={() => handleOpenModal(empleado)}>
+                          Ver
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </TableContainer>
+          <TablePagination
+            component="div"
+            count={filteredData.length}
+            page={page}
+            onPageChange={handleChangePage}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+
+          {/* Filtro y tabla de totales */}
+          <TextField
+            variant="outlined"
+            fullWidth
+            sx={{ mb: 3 }}
+            value={searchTotalTerm}
+            onChange={(e) => setSearchTotalTerm(e.target.value)}
+            placeholder="Filtrar totales por nombre del empleado..."
+          />
+
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Totales por Empleado
+          </Typography>
+          <TableContainer component={Paper} sx={{ mb: 4 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Empleado</TableCell>
+                  <TableCell>Sección</TableCell>
+                  <TableCell>Total Acumulado</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredTotals
+                  .slice(
+                    totalsPage * totalsRowsPerPage,
+                    totalsPage * totalsRowsPerPage + totalsRowsPerPage
+                  )
+                  .map((total) => (
+                    <TableRow key={`${total.empleadoNombre}-${total.seccionNombre}`}>
+                      <TableCell>{total.empleadoNombre}</TableCell>
+                      <TableCell>{total.seccionNombre}</TableCell>
+                      <TableCell style={{ color: total.totalAcumulado > 0 ? "green" : "red" }}>
+                        C${total.totalAcumulado.toLocaleString()}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            component="div"
+            count={filteredTotals.length}
+            page={totalsPage}
+            onPageChange={handleTotalsChangePage}
+            rowsPerPage={totalsRowsPerPage}
+            onRowsPerPageChange={handleTotalsChangeRowsPerPage}
+          />
 
           {/* Modal */}
           {selectedEmployee && (
@@ -153,12 +261,21 @@ const Tab2Content = () => {
               onClose={handleCloseModal}
               maxWidth="md"
               fullWidth
-              fullScreen={isFullScreen} // Condicional para pantallas pequeñas
+              fullScreen={isFullScreen}
             >
               <DialogTitle>Detalles de {selectedEmployee.empleadoNombre}</DialogTitle>
               <DialogContent>
                 <Typography variant="subtitle1" sx={{ mb: 2 }}>
-                  Sección: {selectedEmployee.seccionNombre}
+                  Cliente: {selectedEmployee.clienteNombre}
+                </Typography>
+                <Typography variant="subtitle1" sx={{ mb: 2 }}>
+                  Marca Motor: {selectedEmployee.marcaMotor}
+                </Typography>
+                <Typography variant="subtitle1" sx={{ mb: 2 }}>
+                  Número Motor: {selectedEmployee.numeroMotor}
+                </Typography>
+                <Typography variant="subtitle1" sx={{ mb: 2 }}>
+                  Fecha Proforma: {new Date(selectedEmployee.fechaProforma).toLocaleString()}
                 </Typography>
 
                 {/* Tabla de Detalles */}
@@ -173,7 +290,9 @@ const Tab2Content = () => {
                     {selectedEmployee.items.map((item, index) => (
                       <TableRow key={index}>
                         <TableCell>{item.descripcion}</TableCell>
-                        <TableCell>C${item.precio.toLocaleString()}</TableCell>
+                        <TableCell style={{ color: item.precio > 0 ? "blue" : "red" }}>
+                          C${item.precio.toLocaleString()}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
