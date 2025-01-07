@@ -20,12 +20,10 @@ const App = (props) => {
 
   const theme = createTheme();
 
-  
-
   return (
     <CacheProvider value={emotionCache}>
       <Head>
-        <title>Devias Kit</title>
+        <title>Taller Centeno</title>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
