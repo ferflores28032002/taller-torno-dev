@@ -282,7 +282,7 @@ export const ProformasTable = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Id</TableCell>
+                {/* <TableCell>Id</TableCell> */}
                 <TableCell>Proforma</TableCell>
                 <TableCell>Cliente</TableCell>
                 <TableCell>Fecha</TableCell>
@@ -295,7 +295,7 @@ export const ProformasTable = () => {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((proforma) => (
                   <TableRow hover key={proforma.id}>
-                    <TableCell>{`#${proforma.id}`}</TableCell>
+                    {/* <TableCell>{`#${proforma.id}`}</TableCell> */}
                     <TableCell>{proforma.numeroProforma}</TableCell>
                     <TableCell>{proforma.cliente}</TableCell>
                     <TableCell>{format(new Date(proforma.fechaEmision), "yyyy-MM-dd")}</TableCell>
