@@ -20,6 +20,7 @@ export const InfoModal = ({ id, open, onClose }) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [workers, setWorkers] = useState([]);
+  const [filteredWorkers, setFilteredWorkers] = useState({});
   const [assignments, setAssignments] = useState({});
 
   useEffect(() => {
@@ -29,8 +30,18 @@ export const InfoModal = ({ id, open, onClose }) => {
         const workersData = response.data.map((worker) => ({
           id: worker.id,
           name: `${worker.nombre} ${worker.apellidos}`,
+          cargoNombre: worker.cargoNombre,
         }));
         setWorkers(workersData);
+
+        // Group workers by their section
+        const groupedWorkers = {
+          "Cigüeñal": workersData.filter((worker) => worker.cargoNombre === "Cigüeñal"),
+          "Block": workersData.filter((worker) => worker.cargoNombre === "Block"),
+          "Culata": workersData.filter((worker) => worker.cargoNombre === "Culatero"),
+          "Biela": workersData.filter((worker) => worker.cargoNombre === "Especialista en Bielas"),
+        };
+        setFilteredWorkers(groupedWorkers);
       } catch (error) {
         console.error("Error fetching workers:", error);
       }
@@ -180,12 +191,14 @@ export const InfoModal = ({ id, open, onClose }) => {
                       Asignar Trabajo
                     </Typography>
                     <Autocomplete
-                      options={workers}
+                      options={filteredWorkers[section.seccion.nombre] || []}
                       getOptionLabel={(option) => option.name || ""}
                       renderInput={(params) => (
                         <TextField {...params} label="Seleccionar trabajador" />
                       )}
-                      onChange={(event, value) => handleAssignmentChange(section.seccion.id, value)}
+                      onChange={(event, value) =>
+                        handleAssignmentChange(section.seccion.id, value)
+                      }
                       noOptionsText="No hay trabajadores disponibles"
                     />
                   </Box>
