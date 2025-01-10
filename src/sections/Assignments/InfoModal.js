@@ -20,7 +20,6 @@ export const InfoModal = ({ id, open, onClose }) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [workers, setWorkers] = useState([]);
-  const [filteredWorkers, setFilteredWorkers] = useState({});
   const [assignments, setAssignments] = useState({});
 
   useEffect(() => {
@@ -30,18 +29,8 @@ export const InfoModal = ({ id, open, onClose }) => {
         const workersData = response.data.map((worker) => ({
           id: worker.id,
           name: `${worker.nombre} ${worker.apellidos}`,
-          cargoNombre: worker.cargoNombre,
         }));
         setWorkers(workersData);
-
-        // Group workers by their section
-        const groupedWorkers = {
-          "Cigüeñal": workersData.filter((worker) => worker.cargoNombre === "Cigüeñal"),
-          "Block": workersData.filter((worker) => worker.cargoNombre === "Block"),
-          "Culata": workersData.filter((worker) => worker.cargoNombre === "Culatero"),
-          "Biela": workersData.filter((worker) => worker.cargoNombre === "Especialista en Bielas"),
-        };
-        setFilteredWorkers(groupedWorkers);
       } catch (error) {
         console.error("Error fetching workers:", error);
       }
@@ -57,7 +46,21 @@ export const InfoModal = ({ id, open, onClose }) => {
       setLoading(true);
       try {
         const response = await axiosInstance.get(`Proformas/Listo-proforma-modulo-exclusivo/${id}`);
-        setData(response.data);
+        const updatedData = response.data;
+
+        // Set default worker assignments based on trabajadorId
+        const defaultAssignments = {};
+        updatedData.secciones.forEach((section) => {
+          if (section.trabajadorId !== 0 && section.trabajadorNombre) {
+            defaultAssignments[section.seccionId] = {
+              id: section.trabajadorId,
+              name: section.trabajadorNombre,
+            };
+          }
+        });
+        setAssignments(defaultAssignments);
+
+        setData(updatedData);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -155,7 +158,7 @@ export const InfoModal = ({ id, open, onClose }) => {
 
               {data.secciones.map((section) => (
                 <Box
-                  key={section.seccion.id}
+                  key={section.seccionId}
                   sx={{
                     mb: 4,
                     padding: 2,
@@ -165,7 +168,7 @@ export const InfoModal = ({ id, open, onClose }) => {
                   }}
                 >
                   <Typography variant="h6" gutterBottom sx={{ color: "#333", fontWeight: "bold" }}>
-                    {section.seccion.nombre}
+                    {section.seccionNombre}
                   </Typography>
 
                   {section.items.map((item, index) => (
@@ -191,14 +194,17 @@ export const InfoModal = ({ id, open, onClose }) => {
                       Asignar Trabajo
                     </Typography>
                     <Autocomplete
-                      options={filteredWorkers[section.seccion.nombre] || []}
+                      options={workers}
                       getOptionLabel={(option) => option.name || ""}
+                      defaultValue={
+                        assignments[section.seccionId] && assignments[section.seccionId].id !== 0
+                          ? assignments[section.seccionId]
+                          : null
+                      }
                       renderInput={(params) => (
                         <TextField {...params} label="Seleccionar trabajador" />
                       )}
-                      onChange={(event, value) =>
-                        handleAssignmentChange(section.seccion.id, value)
-                      }
+                      onChange={(event, value) => handleAssignmentChange(section.seccionId, value)}
                       noOptionsText="No hay trabajadores disponibles"
                     />
                   </Box>
