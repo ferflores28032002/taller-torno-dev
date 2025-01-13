@@ -32,7 +32,7 @@ export const SideNav = (props) => {
         return allItems; // Mostrar todas las rutas
       case "Padre":
         return allItems.filter((item) =>
-          ["/", "/reportes"].includes(item.path)
+          ["/", "/reportes","/settings"].includes(item.path)
         );
       case "Hijo":
         return allItems.filter((item) => ["/", "/customers", "/account", "/settings"].includes(item.path));
