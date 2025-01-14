@@ -1,19 +1,4 @@
-import React from "react";
-import {
-  Modal,
-  Box,
-  Typography,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Divider,
-} from "@mui/material";
-
+import { Box, Button, Divider, Modal, Typography } from "@mui/material";
 const ProformaModal = ({ open, onClose, proformaData }) => {
   const style = {
     position: "absolute",
@@ -27,6 +12,21 @@ const ProformaModal = ({ open, onClose, proformaData }) => {
     p: 4,
     maxHeight: "80vh",
     overflowY: "auto",
+    "@media (max-width: 600px)": {
+      width: "100%",
+      borderRadius: "0px",
+    },
+  };
+
+  // Función para formatear la fecha
+  const formatDate = (isoDate) => {
+    if (!isoDate) return "N/A";
+    const date = new Date(isoDate);
+    return new Intl.DateTimeFormat("es-ES", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }).format(date);
   };
 
   return (
@@ -44,7 +44,7 @@ const ProformaModal = ({ open, onClose, proformaData }) => {
               <strong>Número de Proforma:</strong> {proformaData.numeroProforma || "N/A"}
             </Typography>
             <Typography variant="body1">
-              <strong>Fecha:</strong> {proformaData.fechaProforma || "N/A"}
+              <strong>Fecha:</strong> {formatDate(proformaData.fechaProforma)}
             </Typography>
             <Typography variant="body1">
               <strong>Cliente:</strong> {proformaData.clienteNombre || "N/A"}
@@ -60,7 +60,7 @@ const ProformaModal = ({ open, onClose, proformaData }) => {
             </Typography>
 
             <Typography variant="h6" gutterBottom mt={2}>
-              Secciones
+              Trabajos Realizados
             </Typography>
 
             {proformaData.items && proformaData.items.length > 0 ? (
