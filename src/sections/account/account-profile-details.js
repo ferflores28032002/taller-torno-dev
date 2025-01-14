@@ -98,9 +98,9 @@ export const AccountProfileDetails = () => {
       extraBlock: false,
       descripcionExtraBlock: "",
       extraCulata: false,
-      descripcionExtraCulata: "",
+      descripcionCulata: "",
       extraBiela: false,
-      descripcionExtraBiela: "",
+      descripcionBiela: "",
     },
   });
 
@@ -467,15 +467,15 @@ export const AccountProfileDetails = () => {
               {isExtraCulata && (
                 <Grid item xs={12} md={4}>
                   <Controller
-                    name="descripcionExtraCulata"
+                    name="descripcionCulata"
                     control={control}
                     render={({ field }) => (
                       <TextField
                         {...field}
                         fullWidth
                         label="Descripción de la extra Culata"
-                        helperText={errors.descripcionExtraCulata?.message}
-                        error={!!errors.descripcionExtraCulata}
+                        helperText={errors.descripcionCulata?.message}
+                        error={!!errors.descripcionCulata}
                         required
                       />
                     )}
@@ -544,15 +544,15 @@ export const AccountProfileDetails = () => {
               {isExtraBiela && (
                 <Grid item xs={12} md={4}>
                   <Controller
-                    name="descripcionExtraBiela"
+                    name="descripcionBiela"
                     control={control}
                     render={({ field }) => (
                       <TextField
                         {...field}
                         fullWidth
                         label="Descripción de la extra Biela"
-                        helperText={errors.descripcionExtraBiela?.message}
-                        error={!!errors.descripcionExtraBiela}
+                        helperText={errors.descripcionBiela?.message}
+                        error={!!errors.descripcionBiela}
                         required
                       />
                     )}
