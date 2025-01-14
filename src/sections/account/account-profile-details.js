@@ -44,6 +44,7 @@ export const AccountProfileDetails = () => {
     control,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(validationSchema),
@@ -92,16 +93,26 @@ export const AccountProfileDetails = () => {
       cantidadBielasaReconstruir: 0,
       notasBiela: "",
       respuesto: "",
+      descripcionExtraCigueñal: "",
+      extraCigueñal: false,
+      extraBlock: false,
+      descripcionExtraBlock: "",
+      extraCulata: false,
+      descripcionExtraCulata: "",
+      extraBiela: false,
+      descripcionExtraBiela: "",
     },
   });
+
+  const isExtraCigueñal = watch("extraCigueñal");
+  const isExtraBlock = watch("extraBlock");
+  const isExtraCulata = watch("extraCulata");
+  const isExtraBiela = watch("extraBiela");
 
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      const response = await axiosInstance.post(
-        "OrdenTrabajo",
-        data
-      );
+      const response = await axiosInstance.post("OrdenTrabajo", data);
       console.log("Response:", response.data);
       setLoading(false);
       await MySwal.fire({
@@ -224,6 +235,7 @@ export const AccountProfileDetails = () => {
                   />
                 </Grid>
               ))}
+
               <Grid item xs={12} md={4}>
                 <Controller
                   name="revisionBiela"
@@ -265,6 +277,39 @@ export const AccountProfileDetails = () => {
                   )}
                 />
               </Grid>
+              <Grid item xs={12} md={4} key={name}>
+                <Controller
+                  name="extraCigueñal"
+                  control={control}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      control={<Checkbox {...field} checked={field.value} />}
+                      label="Extra Cigüeñal"
+                      style={{
+                        color: "blue",
+                      }}
+                    />
+                  )}
+                />
+              </Grid>
+              {isExtraCigueñal && (
+                <Grid item xs={12} md={4}>
+                  <Controller
+                    name="descripcionExtraCigueñal"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        fullWidth
+                        label="Descripción de la extra Cigüeñal"
+                        helperText={errors.descripcionExtraCigueñal?.message}
+                        error={!!errors.descripcionExtraCigueñal}
+                        required
+                      />
+                    )}
+                  />
+                </Grid>
+              )}
 
               {/* Sección: Block */}
               <Grid item xs={12}>
@@ -303,6 +348,41 @@ export const AccountProfileDetails = () => {
                   )}
                 />
               </Grid>
+
+              <Grid item xs={12} md={4}>
+                <Controller
+                  name="extraBlock"
+                  control={control}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      control={<Checkbox {...field} checked={field.value} />}
+                      label="Extra Block"
+                      style={{
+                        color: "blue",
+                      }}
+                    />
+                  )}
+                />
+              </Grid>
+
+              {isExtraBlock && (
+                <Grid item xs={12} md={4}>
+                  <Controller
+                    name="descripcionExtraBlock"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        fullWidth
+                        label="Descripción de la extra Block"
+                        helperText={errors.descripcionExtraBlock?.message}
+                        error={!!errors.descripcionExtraBlock}
+                        required
+                      />
+                    )}
+                  />
+                </Grid>
+              )}
 
               {/* Sección: Culatas */}
               <Grid item xs={12}>
@@ -368,6 +448,41 @@ export const AccountProfileDetails = () => {
                 />
               </Grid>
 
+              <Grid item xs={12} md={4}>
+                <Controller
+                  name="extraCulata"
+                  control={control}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      control={<Checkbox {...field} checked={field.value} />}
+                      label="Extra Culata"
+                      style={{
+                        color: "blue",
+                      }}
+                    />
+                  )}
+                />
+              </Grid>
+
+              {isExtraCulata && (
+                <Grid item xs={12} md={4}>
+                  <Controller
+                    name="descripcionExtraCulata"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        fullWidth
+                        label="Descripción de la extra Culata"
+                        helperText={errors.descripcionExtraCulata?.message}
+                        error={!!errors.descripcionExtraCulata}
+                        required
+                      />
+                    )}
+                  />
+                </Grid>
+              )}
+
               {/* Sección: Biela */}
               <Grid item xs={12}>
                 <Typography variant="h6">Biela</Typography>
@@ -409,6 +524,41 @@ export const AccountProfileDetails = () => {
                   )}
                 />
               </Grid>
+
+              <Grid item xs={12} md={4}>
+                <Controller
+                  name="extraBiela"
+                  control={control}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      control={<Checkbox {...field} checked={field.value} />}
+                      label="Extra Biela"
+                      style={{
+                        color: "blue",
+                      }}
+                    />
+                  )}
+                />
+              </Grid>
+
+              {isExtraBiela && (
+                <Grid item xs={12} md={4}>
+                  <Controller
+                    name="descripcionExtraBiela"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        fullWidth
+                        label="Descripción de la extra Biela"
+                        helperText={errors.descripcionExtraBiela?.message}
+                        error={!!errors.descripcionExtraBiela}
+                        required
+                      />
+                    )}
+                  />
+                </Grid>
+              )}
 
               {/* Sección: Respuesto */}
               <Grid item xs={12}>
