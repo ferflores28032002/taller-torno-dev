@@ -15,6 +15,7 @@ import {
   TablePagination,
 } from "@mui/material";
 import axiosInstance from "src/api/axiosInstance";
+import ProformaModal from "./ProformaModal";
 
 const Tab2Content = () => {
   const [startDate, setStartDate] = useState("2024-12-23");
@@ -69,10 +70,10 @@ const Tab2Content = () => {
       setFilteredTotals(totales);
 
       setNoDataMessage("");
-
-      
     } catch (error) {
-      setNoDataMessage('No se encontraron proformas aprobadas en el rango de fechas proporcionado.')
+      setNoDataMessage(
+        "No se encontraron proformas aprobadas en el rango de fechas proporcionado."
+      );
       console.error("Error fetching Tab 2 data:", error);
     }
   };
@@ -121,6 +122,18 @@ const Tab2Content = () => {
   const handleTotalsChangeRowsPerPage = (event) => {
     setTotalsRowsPerPage(parseInt(event.target.value, 10));
     setTotalsPage(0);
+  };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [proformaId, setProformaId] = useState("12345"); // Puedes cambiar esto a cualquier ID válido
+
+  const handleOpenModal = (id) => {
+    setProformaId(id); // Establece el ID antes de abrir el modal
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -178,6 +191,7 @@ const Tab2Content = () => {
                       <TableCell>Cliente</TableCell>
                       <TableCell>Proforma</TableCell>
                       <TableCell>Total Ganado</TableCell>
+                      <TableCell>Opciones</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -191,6 +205,14 @@ const Tab2Content = () => {
                           <TableCell>{empleado.numeroProforma}</TableCell>
                           <TableCell style={{ color: empleado.totalGanado > 0 ? "blue" : "red" }}>
                             C${empleado.totalGanado.toLocaleString()}
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              variant="contained"
+                              onClick={() => handleOpenModal(empleado)}
+                            >
+                              Detalles
+                            </Button>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -248,6 +270,7 @@ const Tab2Content = () => {
               </TableBody>
             </Table>
           </TableContainer>
+          <ProformaModal open={isModalOpen} onClose={handleCloseModal} proformaData={proformaId} />
           <TablePagination
             component="div"
             count={filteredTotals.length}
