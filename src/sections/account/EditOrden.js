@@ -1,29 +1,28 @@
-import React, { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { es } from "date-fns/locale";
-import axios from "axios";
 import {
+  Alert,
   Box,
   Button,
   Card,
   CardActions,
   CardContent,
   CardHeader,
-  Divider,
-  TextField,
-  Grid,
-  FormControlLabel,
   Checkbox,
-  Typography,
+  Divider,
+  FormControlLabel,
+  Grid,
   Snackbar,
-  Alert,
+  TextField,
+  Typography,
 } from "@mui/material";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import axiosInstance from "src/api/axiosInstance";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { format } from "date-fns";
-import axiosInstance from "src/api/axiosInstance";
+import * as yup from "yup";
 
 const MySwal = withReactContent(Swal);
 

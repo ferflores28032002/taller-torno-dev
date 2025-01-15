@@ -42,12 +42,15 @@ const ProformaModal = ({ open, handleClose, data, id }) => {
   const calculateRemaining = (total, advance) => {
     return total - advance;
   };
-
-  const handlePriceChange = (service, value) => {
-    if (!isNaN(value) && Number(value) >= 0) {
-      setPrices((prev) => ({ ...prev, [service]: value }));
-    }
+  const handlePriceChange = (serviceName, value) => {
+    if (!serviceName || typeof serviceName !== "string") return; // Validar la clave
+    setPrices((prev) => ({
+      ...prev,
+      [serviceName]: parseFloat(value) > 0 ? value : "",
+    }));
   };
+  
+  
 
   const handleAdvanceChange = (value) => {
     if (!isNaN(value) && Number(value) >= 0) {
@@ -61,15 +64,24 @@ const ProformaModal = ({ open, handleClose, data, id }) => {
 
   const handleSave = async () => {
     const payload = {
-      ordenTrabajoId: id, // El ID de la orden como prop
+      ordenTrabajoId: id,
       adelanto: advance,
-      estadoId: 1, // Estado fijo como 1
-      items: Object.entries(prices).map(([descripcion, precio]) => ({
+      estadoId: 1,
+      items: Object.entries(prices)
+        .filter(([descripcion, precio]) => precio) // Excluir precios vacíos o inválidos
+        .map(([descripcion, precio]) => ({
+          descripcion,
+          precio: parseFloat(precio),
+        })),
+      respuestos: repuestos,
+    };
+
+    console.log(
+      Object.entries(prices).map(([descripcion, precio]) => ({
         descripcion,
         precio: parseFloat(precio) || 0,
-      })),
-      respuestos: repuestos, // Guardar el valor de los repuestos
-    };
+      })), 'rehbhgjber'
+    )
 
     try {
       const response = await axiosInstance.post(
@@ -87,6 +99,8 @@ const ProformaModal = ({ open, handleClose, data, id }) => {
   const iva = calculateIVA(subtotal);
   const total = calculateTotal(subtotal, iva);
   const remaining = calculateRemaining(total, advance);
+
+  console.log(data,'data')
 
   return (
     <Modal open={open} onClose={handleClose}>
