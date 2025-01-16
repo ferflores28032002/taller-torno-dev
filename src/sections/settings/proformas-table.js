@@ -19,6 +19,8 @@ import axios from "axios";
 import { Scrollbar } from "src/components/scrollbar";
 import EditProformaModal from "./EditProformaModal";
 import axiosInstance from "src/api/axiosInstance";
+import Swal from "sweetalert2";
+import { Delete, Edit, PictureAsPdf, Print } from "@mui/icons-material";
 
 export const ProformasTable = () => {
   const [proformas, setProformas] = useState([]);
@@ -262,6 +264,31 @@ export const ProformasTable = () => {
     setModalOpen(false);
   };
 
+  const deleteProforma = async (id) => {
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "¡No podrás revertir esto!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, bórralo",
+      cancelButtonText: "Cancelar",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axiosInstance.delete(`Proformas/${id}`);
+          fetchProformas();
+
+          Swal.fire("¡Borrado!", "Tu Proforma ha sido eliminado.", "success");
+        } catch (error) {
+          console.error("Error deleting order:", error);
+          Swal.fire("¡Error!", "Ha ocurrido un error al intentar borrar el archivo.", "error");
+        }
+      }
+    });
+  };
+
   return (
     <Card>
       <Box display="flex" justifyContent="space-between" gap={2} alignItems="center" p={2}>
@@ -306,22 +333,47 @@ export const ProformasTable = () => {
                     >
                       {proforma.estado}
                     </TableCell>
-                    <TableCell>
+                    <TableCell
+                      sx={{
+                        display: "flex",
+                        gap: 1,
+                      }}
+                    >
                       <Button
                         variant="contained"
                         color="primary"
                         onClick={() => handlePrint(proforma.id)}
-                        sx={{ marginRight: 1 }}
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          minWidth: 0,
+                          borderRadius: "8px",
+                          padding: "0",
+
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
                       >
-                        Imprimir
+                        <Print />
                       </Button>
                       <Button
                         variant="contained"
                         color="error"
                         onClick={() => handleDownloadPDF(proforma.id)}
-                        sx={{ marginRight: 1 }}
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          minWidth: 0,
+                          borderRadius: "8px",
+                          padding: "0",
+
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
                       >
-                        Descargar PDF
+                        <PictureAsPdf />
                       </Button>
 
                       <Button
@@ -331,9 +383,37 @@ export const ProformasTable = () => {
                           handleOpenModal();
                           setSelectedProforma(proforma);
                         }}
-                        sx={{ marginRight: 1 }}
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          minWidth: 0,
+                          borderRadius: "8px",
+                          padding: "0",
+
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
                       >
-                        Editar
+                        <Edit />
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="error"
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          minWidth: 0,
+                          borderRadius: "8px",
+                          padding: "0",
+
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                        onClick={() => deleteProforma(proforma.id)}
+                      >
+                        <Delete />
                       </Button>
                     </TableCell>
                   </TableRow>

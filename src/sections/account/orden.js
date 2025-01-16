@@ -11,7 +11,15 @@ import {
   TableRow,
 } from "@mui/material";
 
-import { Build, Description, Edit, PictureAsPdf, Print, Visibility } from "@mui/icons-material"; // Material Icons
+import {
+  Build,
+  Delete,
+  Description,
+  Edit,
+  PictureAsPdf,
+  Print,
+  Visibility,
+} from "@mui/icons-material"; // Material Icons
 import axios from "axios";
 import { format } from "date-fns";
 import jsPDF from "jspdf";
@@ -23,6 +31,7 @@ import CreateRepairModal from "./CreateRepairModal";
 import OrderDetailsModal from "./OrderDetailsModal";
 import EditOrden from "./EditOrden";
 import axiosInstance from "src/api/axiosInstance";
+import Swal from "sweetalert2";
 
 export const Orden = ({ searchQuery }) => {
   const [ordenes, setOrdenes] = useState([]);
@@ -311,6 +320,31 @@ export const Orden = ({ searchQuery }) => {
     // Actualiza el estado o la UI según sea necesario.
   };
 
+  const deleteOrden = async (id) => {
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "¡No podrás revertir esto!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, bórralo",
+      cancelButtonText: "Cancelar",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axiosInstance.delete(`OrdenTrabajo/${id}`);
+          setOrdenes(ordenes.filter((orden) => orden.id !== id));
+
+          Swal.fire("¡Borrado!", "Tu Orden ha sido eliminado.", "success");
+        } catch (error) {
+          console.error("Error deleting order:", error);
+          Swal.fire("¡Error!", "Ha ocurrido un error al intentar borrar el archivo.", "error");
+        }
+      }
+    });
+  };
+
   return (
     <>
       {edit && <EditOrden setEdit={setEdit} id={selectedId} />}
@@ -367,8 +401,18 @@ export const Orden = ({ searchQuery }) => {
                           <Button
                             variant="contained"
                             color="primary"
+                            sx={{
+                              width: 40,
+                              height: 40,
+                              minWidth: 0,
+                              borderRadius: "8px",
+                              padding: "0",
+                            
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
                             onClick={() => handlePrint(orden.id)}
-                            sx={{ marginRight: 1 }}
                           >
                             <Print />
                           </Button>
@@ -377,6 +421,17 @@ export const Orden = ({ searchQuery }) => {
                           <Button
                             variant="contained"
                             color="error"
+                            sx={{
+                              width: 40,
+                              height: 40,
+                              minWidth: 0,
+                              borderRadius: "8px",
+                              padding: "0",
+
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
                             onClick={() => handleDownloadPDF(orden.id)}
                           >
                             <PictureAsPdf />
@@ -386,13 +441,25 @@ export const Orden = ({ searchQuery }) => {
                           <Button
                             variant="contained"
                             color="primary"
+                            sx={{
+                              width: 40,
+                              height: 40,
+                              minWidth: 0,
+                              borderRadius: "8px",
+                              padding: "0",
+
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            
+                              position: "relative",
+                            }}
                             onClick={() => {
                               setSelectedId(orden.id);
                               handleCreateProforma(orden.id);
                             }}
                             disabled={buttonLoading === orden.id}
                             isLoading={buttonLoading === orden.id}
-                            sx={{ marginRight: 1, position: "relative" }}
                           >
                             <Description />
                           </Button>
@@ -401,11 +468,23 @@ export const Orden = ({ searchQuery }) => {
                           <Button
                             variant="contained"
                             color="secondary"
+                            sx={{
+                              width: 40,
+                              height: 40,
+                              minWidth: 0,
+                              borderRadius: "8px",
+                              padding: "0",
+
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            
+                              position: "relative",
+                            }}
                             onClick={() => {
                               setSelectedId(orden.id);
                               setModalOpenOrder(true);
                             }}
-                            sx={{ marginRight: 1 }}
                           >
                             <Visibility />
                           </Button>
@@ -414,6 +493,17 @@ export const Orden = ({ searchQuery }) => {
                           <Button
                             variant="contained"
                             color="warning"
+                            sx={{
+                              width: 40,
+                              height: 40,
+                              minWidth: 0,
+                              borderRadius: "8px",
+                              padding: "0",
+
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
                             onClick={() => {
                               setSelectedId(orden.id);
                               setCreateRepair(true);
@@ -424,6 +514,17 @@ export const Orden = ({ searchQuery }) => {
                           <Button
                             variant="contained"
                             color="primary"
+                            sx={{
+                              width: 40,
+                              height: 40,
+                              minWidth: 0,
+                              borderRadius: "8px",
+                              padding: "0",
+
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
                             onClick={() => {
                               setSelectedId(orden.id);
                               setEdit(true);
@@ -431,7 +532,27 @@ export const Orden = ({ searchQuery }) => {
                           >
                             <Edit />
                           </Button>
+                          <Button
+                            variant="contained"
+                            color="error"
+                            sx={{
+                              width: 40,
+                              height: 40,
+                              minWidth: 0,
+                              borderRadius: "8px",
+                              padding: "0",
+
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                            onClick={() => deleteOrden(orden.id)}
+                          >
+                            <Delete />
+                          </Button>
                         </TableCell>
+                 
+                  
                       </TableRow>
                     ))}
                 </TableBody>

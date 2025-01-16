@@ -19,15 +19,27 @@ import useAuthStore from "src/store/useAuthStore"; // Zustand store
 const Page = () => {
   const router = useRouter();
   const role = useAuthStore((state) => state.role);
+  const setUser = useAuthStore((state) => state.setUser);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   useEffect(() => {
-    if (!role) {
+    const authData = JSON.parse(localStorage.getItem("auth-storage"));
+
+    if (authData && authData.state && authData.state.role) {
+      // Si hay datos en el localStorage, los usamos para establecer el estado
+      setUser({
+        user: authData.state.user || null,
+        role: authData.state.role || null,
+      });
+      setIsCheckingAuth(false);
+    } else if (!role) {
+      // Si no hay datos y el usuario no está logueado, redirige al login
       router.push("/auth/login");
     } else {
-      setIsCheckingAuth(false); // Authentication check completed
+      // Si el rol ya está definido en Zustand
+      setIsCheckingAuth(false);
     }
-  }, [role, router]);
+  }, [role, router, setUser]);
 
   if (isCheckingAuth) {
     // Render a styled loader while checking authentication
