@@ -23,7 +23,7 @@ const ViewFalsaProformaModal = ({ open, handleClose, data }) => {
         }}
       >
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="h6">Detalles de la Falsa Proforma</Typography>
+          <Typography variant="h6">Detalles de la Proforma</Typography>
           <IconButton onClick={handleClose}>
             <Close />
           </IconButton>
@@ -40,13 +40,13 @@ const ViewFalsaProformaModal = ({ open, handleClose, data }) => {
         </Typography>
 
         <Typography variant="subtitle1" sx={{ mt: 2 }}>
-          Ítems
+          Servicios Solicitados
         </Typography>
         {data.items && data.items.length > 0 ? (
           data.items.map((item, index) => (
             <Box key={index} mb={1}>
               <Typography variant="body2">
-                • {item.descripcion || "Sin descripción"} - C$ {item.precio || "0.00"}
+                • {item.descripcion || "Sin descripción"} - {item.precio || "0.00"}
               </Typography>
             </Box>
           ))

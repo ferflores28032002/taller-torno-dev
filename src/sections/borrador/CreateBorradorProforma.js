@@ -38,6 +38,22 @@ const CreateFalsaProformaModal = ({ open, handleClose, fetchProformas }) => {
   };
 
   const handleSave = async () => {
+    if (
+      !formData.cliente ||
+      !formData.marcaMotor ||
+      !formData.numeroMotor ||
+      !formData.repuestos ||
+      formData.items.some((item) => !item.descripcion || !item.precio)
+    ) {
+      Swal.fire({
+        icon: "error",
+        title: "Por favor, complete todos los campos",
+        text: "Todos los campos son requeridos",
+      });
+      handleClose();
+      return;
+    }
+
     try {
       const payload = {
         cliente: formData.cliente || undefined,
@@ -52,7 +68,7 @@ const CreateFalsaProformaModal = ({ open, handleClose, fetchProformas }) => {
       Swal.fire({
         icon: "success",
         title: "Borrador de proforma creada",
-        showConfirmButton: false,
+        text: "La falsa proforma ha sido creada exitosamente",
       });
 
       setFormData({
@@ -167,7 +183,20 @@ const CreateFalsaProformaModal = ({ open, handleClose, fetchProformas }) => {
         />
 
         <Box mt={2} display="flex" justifyContent="space-between">
-          <Button variant="contained" color="secondary" onClick={handleClose}>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => {
+              handleClose();
+              setFormData({
+                cliente: "",
+                marcaMotor: "",
+                numeroMotor: "",
+                repuestos: "",
+                items: [{ descripcion: "", precio: "" }],
+              });
+            }}
+          >
             Cancelar
           </Button>
           <Button variant="contained" color="primary" onClick={handleSave}>
