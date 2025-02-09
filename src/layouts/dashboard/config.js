@@ -53,6 +53,15 @@ export const items = [
     ),
   },
   {
+    title: "Borrador",
+    path: "/borrador",
+    icon: (
+      <SvgIcon fontSize="small">
+        <DescriptionIcon />
+      </SvgIcon>
+    ),
+  },
+  {
     title: "Ordenes de Trabajo",
     path: "/account",
     icon: (
