@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Button, Typography, Modal, TextField, IconButton } from "@mui/material";
 import { AddCircleOutline, RemoveCircleOutline, Close } from "@mui/icons-material";
 import axiosInstance from "src/api/axiosInstance";
 import Swal from "sweetalert2";
 
-const CreateFalsaProformaModal = ({ open, handleClose, fetchProformas }) => {
+const EditFalsaProformaModal = ({ open, handleClose, fetchProformas, data }) => {
   const [formData, setFormData] = useState({
     cliente: "",
     marcaMotor: "",
@@ -12,6 +12,21 @@ const CreateFalsaProformaModal = ({ open, handleClose, fetchProformas }) => {
     repuestos: "",
     items: [{ descripcion: "", precio: "" }],
   });
+
+  useEffect(() => {
+    if (data) {
+      setFormData({
+        cliente: data.cliente || "",
+        marcaMotor: data.marcaMotor || "",
+        numeroMotor: data.numeroMotor || "",
+        repuestos: data.respuestos || "",
+        items:
+          data.items.length > 0
+            ? data.items.map((item) => ({ ...item, precio: item.precio.replace(/[^0-9.]/g, "") }))
+            : [{ descripcion: "", precio: "" }],
+      });
+    }
+  }, [data]);
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -38,55 +53,30 @@ const CreateFalsaProformaModal = ({ open, handleClose, fetchProformas }) => {
   };
 
   const handleSave = async () => {
-    if (
-      !formData.cliente ||
-      !formData.marcaMotor ||
-      !formData.numeroMotor ||
-      !formData.repuestos ||
-      formData.items.some((item) => !item.descripcion || !item.precio)
-    ) {
-      Swal.fire({
-        icon: "error",
-        title: "Por favor, complete todos los campos",
-        text: "Todos los campos son requeridos",
-      });
-      handleClose();
-      return;
-    }
-
     try {
       const payload = {
-        cliente: formData.cliente || undefined,
-        marcaMotor: formData.marcaMotor || undefined,
-        numeroMotor: formData.numeroMotor || undefined,
-        respuestos: formData.repuestos || undefined,
+        cliente: formData.cliente,
+        marcaMotor: formData.marcaMotor,
+        numeroMotor: formData.numeroMotor,
+        respuestos: formData.repuestos,
         items: formData.items.filter((item) => item.descripcion || item.precio),
       };
 
-      await axiosInstance.post("FalsaProforma", payload);
+      await axiosInstance.put(`FalsaProforma/${data.id}`, payload);
 
       Swal.fire({
         icon: "success",
-        title: "Borrador de proforma creada",
-        text: "La falsa proforma ha sido creada exitosamente",
-      });
-
-      setFormData({
-        cliente: "",
-        marcaMotor: "",
-        numeroMotor: "",
-        repuestos: "",
-        items: [{ descripcion: "", precio: "" }],
+        title: "Falsa Proforma Actualizada",
+        text: "La falsa proforma ha sido actualizada exitosamente",
       });
 
       fetchProformas();
-
       handleClose();
     } catch (error) {
       console.error(error);
       Swal.fire({
         icon: "error",
-        title: "Error al crear la falsa proforma",
+        title: "Error al actualizar la falsa proforma",
         text: error.response?.data.message || error.message,
       });
     }
@@ -110,7 +100,7 @@ const CreateFalsaProformaModal = ({ open, handleClose, fetchProformas }) => {
         }}
       >
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="h6">Crear Falsa Proforma</Typography>
+          <Typography variant="h6">Editar Falsa Proforma</Typography>
           <IconButton onClick={handleClose}>
             <Close />
           </IconButton>
@@ -149,6 +139,7 @@ const CreateFalsaProformaModal = ({ open, handleClose, fetchProformas }) => {
               value={item.descripcion}
               onChange={(e) => handleItemChange(index, "descripcion", e.target.value)}
             />
+
             <span>C$</span>
             <TextField
               type="number"
@@ -184,24 +175,11 @@ const CreateFalsaProformaModal = ({ open, handleClose, fetchProformas }) => {
         />
 
         <Box mt={2} display="flex" justifyContent="space-between">
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => {
-              handleClose();
-              setFormData({
-                cliente: "",
-                marcaMotor: "",
-                numeroMotor: "",
-                repuestos: "",
-                items: [{ descripcion: "", precio: "" }],
-              });
-            }}
-          >
+          <Button variant="contained" color="secondary" onClick={handleClose}>
             Cancelar
           </Button>
           <Button variant="contained" color="primary" onClick={handleSave}>
-            Guardar
+            Actualizar
           </Button>
         </Box>
       </Box>
@@ -209,4 +187,4 @@ const CreateFalsaProformaModal = ({ open, handleClose, fetchProformas }) => {
   );
 };
 
-export default CreateFalsaProformaModal;
+export default EditFalsaProformaModal;

@@ -1,4 +1,5 @@
-import { Add, PictureAsPdf, Print } from "@mui/icons-material";
+import EyeIcon from "@heroicons/react/24/solid/EyeIcon";
+import { Add, Delete, Edit, PictureAsPdf, Print } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -18,9 +19,10 @@ import "jspdf-autotable";
 import { useEffect, useState } from "react";
 import axiosInstance from "src/api/axiosInstance";
 import { Scrollbar } from "src/components/scrollbar";
+import Swal from "sweetalert2";
 import CreateFalsaProformaModal from "./CreateBorradorProforma";
 import ViewFalsaProformaModal from "./ViewFalsaProformaModal";
-import EyeIcon from "@heroicons/react/24/solid/EyeIcon";
+import EditFalsaProformaModal from "./EditFalsaProformaModal";
 
 export const BorradorProformasTable = () => {
   const [proformas, setProformas] = useState([]);
@@ -32,6 +34,7 @@ export const BorradorProformasTable = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProforma, setSelectedProforma] = useState(null);
   const [modalCreateOpen, setModalCreateOpen] = useState(false);
+  const [modalEditOpen, setModalEditOpen] = useState(false);
 
   const handleSearch = (event) => {
     const query = event.target.value.toLowerCase();
@@ -255,6 +258,31 @@ export const BorradorProformasTable = () => {
     setModalOpen(false);
   };
 
+  const deleteProforma = async (id) => {
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "¡No podrás revertir esto!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, bórralo",
+      cancelButtonText: "Cancelar",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axiosInstance.delete(`FalsaProforma/${id}`);
+          fetchProformas();
+
+          Swal.fire("¡Borrado!", "Tu Proforma ha sido eliminado.", "success");
+        } catch (error) {
+          console.error("Error deleting order:", error);
+          Swal.fire("¡Error!", "Ha ocurrido un error al intentar borrar el archivo.", "error");
+        }
+      }
+    });
+  };
+
   return (
     <Card>
       <Box display="flex" justifyContent="space-between" gap={2} alignItems="center" p={2}>
@@ -299,6 +327,13 @@ export const BorradorProformasTable = () => {
         open={isModalOpen}
         handleClose={handleCloseModal}
         data={selectedProforma}
+      />
+
+      <EditFalsaProformaModal
+        open={modalEditOpen}
+        handleClose={() => setModalEditOpen(false)}
+        data={selectedProforma}
+        fetchProformas={fetchProformas}
       />
       <Scrollbar>
         <Box sx={{ minWidth: 800 }}>
@@ -386,6 +421,49 @@ export const BorradorProformasTable = () => {
                         }}
                       >
                         <EyeIcon width={24} height={24} />
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => {
+                          fetchProformaDetails(proforma.id).then((data) => {
+                            setSelectedProforma({ ...data, id: proforma.id });
+                            setModalEditOpen(true);
+                          });
+                        }}
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          minWidth: 0,
+                          borderRadius: "8px",
+                          padding: "0",
+
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Edit width={24} height={24} />
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="error"
+                        onClick={() => {
+                          deleteProforma(proforma.id);
+                        }}
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          minWidth: 0,
+                          borderRadius: "8px",
+                          padding: "0",
+
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Delete width={24} height={24} />
                       </Button>
                     </TableCell>
                   </TableRow>
