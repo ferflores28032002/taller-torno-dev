@@ -53,7 +53,7 @@ export const ProformasTable = () => {
     try {
       const response = await axiosInstance.get("Proformas");
       setProformas(response.data);
-      setFilteredProformas(response.data.reverse() || []);
+      setFilteredProformas(response.data || []);
     } catch (error) {
       console.error("Error al obtener las proformas:", error);
     }
